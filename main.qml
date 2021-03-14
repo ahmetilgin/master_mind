@@ -31,15 +31,31 @@ Window {
             bottom  : parent.bottom
         }
 
-        TextArea {
+        TextField  {
              id                 :   user_input
              placeholderText    :   "Tahmininizi Giriniz.."
-             horizontalAlignment:   Qt.AlignCenter
+             horizontalAlignment:   Qt.AlignHCenter
              anchors.left       :   parent.left
              anchors.right      :   parent.right
              height             :   25
+             inputMethodHints   :   Qt.ImhFormattedNumbersOnly
+             validator: IntValidator {
+                    bottom: 1000
+                    top: 9999
+             }
+             onTextChanged      :   {
+                 if (length > 4) {
 
-             onTextChanged      :   if (length > 4) remove(4, length);
+                        remove(4, length)
+                 }else{
+                     var index = text.indexOf(text[text.length - 1]);
+                     if(index > -1 && index != text.length -1){
+                            play_order.text = "Girilen sayının basamakları benzersiz olmalı"
+                            info_timer.running = true
+                            remove(remove( length -1, length))
+                      }
+                 }
+             }
              background: Rectangle {
                 border.color    : user_input.focus ? "#21be2b"   : "lightgray"
                 color           : user_input.focus ? "lightgray" : "transparent"
@@ -60,6 +76,16 @@ Window {
 
                      }
                      user_input.text = ""
+                 }
+
+             }
+             Timer {
+                 id : info_timer
+                 interval: 1000;
+                 running: false;
+                 repeat: false
+                 onTriggered:{
+                     play_order.text = "Sıra Sizde"
                  }
 
              }
@@ -115,9 +141,6 @@ Window {
             columnWidthProvider: function (column) { return columnWidths[column] }
         }
     }
-
-
-
 
     MasterMind{
         id  : master_mind_game
